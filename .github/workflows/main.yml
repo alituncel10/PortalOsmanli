@@ -3,6 +3,8 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
@@ -25,3 +27,10 @@ jobs:
         with:
           name: PortalOsmanli-APK
           path: app/build/outputs/apk/debug/*.apk
+      - name: Indirme linkine koy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk PortalOsmanli.apk
+          gh release delete apk --yes --cleanup-tag || true
+          gh release create apk PortalOsmanli.apk --title "Portal Osmanli APK" --notes "Son derleme"
